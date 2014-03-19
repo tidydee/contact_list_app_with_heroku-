@@ -1,5 +1,6 @@
 require 'colorize'
 require 'pry'
+require './contact'
 
 class Application
 
@@ -70,24 +71,21 @@ class Application
   
   def new_contact
     puts "Please type contact's email address."
-    binding.pry
     email = gets.chomp
-    email_check = Contact.find_by_email(email)
-
-      if !email_check.nil?
-        puts ("A contact with this email already exists!").upcase.colorize( :red ) 
-        puts ("Duplicated email address are not allowed.").upcase.colorize( :red )
-      else
-        puts "Please type contact's first name."
-        fname = gets.chomp
-        puts "Please type contact's last name."
-        lname = gets.chomp
-        numbers = add_phones
-
-        contact = Contact.create(fname, lname, email, numbers)
-        contactString = "#{contact}".colorize(:green)
-        puts "New contact #{contactString} has been added."
-      end
+    if Contact.find_by_email(email) then
+      puts ("A contact with this email already exists!").upcase.colorize( :red ) 
+      puts ("Duplicated email address are not allowed.").upcase.colorize( :red )
+      return
+    end
+    
+    puts "Please type contact's first name."
+    fname = gets.chomp
+    puts "Please type contact's last name."
+    lname = gets.chomp
+    
+    contact = Contact.create(fname, lname, email)
+    contactString = "#{contact}".colorize(:green)
+    puts "New contact #{contactString} has been added."
   end
 
   def add_phones

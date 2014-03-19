@@ -24,7 +24,7 @@ class Contact
     # INSERT against the table and use @fname, @lname, etc to generate our INSERT stmt
     # Get back the ID from the record that was just inserted and save it as @id
     # return true
-    connection = self.db_connection
+    connection = Contact.db_connection
     results = connection.exec(
         "INSERT INTO contacts (firstname, lastname, email)
          VALUES ('#{@fname}', '#{@lname}', '#{@email}')
@@ -70,14 +70,35 @@ class Contact
   
   # end
 
-  # def to_s
-  #   # TODO: return string representation of Contact
-  #   "#{@id}: #{@fname} #{@lname} (#{@email}) #{@numbers}"  
-  # end
+  def to_s
+    # TODO: return string representation of Contact
+    "#{@id}: #{@fname} #{@lname} (#{@email})"  
+  end
 
 
   # ## Class Methods
-  # class << self
+  class << self
+
+    def create(fname, lname, email)
+      contact = Contact.new(fname, lname, email)
+      contact.save #Does an insert:)
+      return contact
+    end
+
+    def find_by_email (email)
+      connection = Contact.db_connection
+      results = connection.exec(
+          "SELECT email 
+           FROM contacts
+           WHERE email LIKE '%#{email}%' LIMIT 1"
+        )
+      connection.close
+      results[0].length > 0
+    end
+
+  end
+end
+   
 
   #   def find_by_name( contact_name )
   #     @@contact.find_all {|contact| contact.fname == contact_name } unless @@contact.nil?
@@ -87,15 +108,7 @@ class Contact
   #     @@contact.find_all {|contact| contact.id == id } unless @@contact.nil?
   #   end
 
-  #   def find_by_email email
-  #     @@contact.find_all {|contact| contact.email == email} unless @@contact.nil?
-  #   end
 
-  #   def create(fname, lname, email, numbers = {})
-  #     contact = Contact.new(fname, lname, email, numbers)
-  #     @@contacts << contact
-  #     return contact
-  #   end
 
   #   def all_CSV
   #     @@contacts      
@@ -118,4 +131,3 @@ class Contact
   #   end
   # end
 
-end
