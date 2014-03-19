@@ -31,20 +31,33 @@ class Contact
     connection.close
   end
 
-  def update
-    # estab a conn with db
-    # UPDATE against the table and use @fname, @lname, email to Gen Update stmt
-    # Get back the id from the record needing UPDATE    
-  end
-
-
   def to_s
     "#{@id}: #{@fname} #{@lname} (#{@email})"  
   end
 
-
   # ## Class Methods
   class << self
+  
+  def update_entry(id)
+    # estab a conn with db
+    # UPDATE against the table and use @fname, @lname, email to Gen Update stmt
+    # Get back the id from the record needing UPDATE
+    puts "What's the new name?"
+    new_name = gets.chomp
+    puts "What's the new last name?"
+    new_last_name = gets.chomp
+    puts "What's the new email?"
+    new_email = gets.chomp
+
+    connection = Contact.db_connection
+    results = connection.exec(
+        "UPDATE contacts SET firstname = '#{new_name}'
+          ,lastname = '#{new_last_name}'
+          ,email = '#{new_email}' 
+         WHERE id = #{id};"
+        )
+    connection.close
+  end
 
     def create(fname, lname, email)
       contact = Contact.new(fname, lname, email)
@@ -74,13 +87,13 @@ class Contact
       end
       contacts
     end
-  end
 
-  def find_by_email (email)
-    Contact.runQuery("SELECT email 
-         FROM contacts
-         WHERE email LIKE '%#{email}%' LIMIT 1").results[0].length > 0
-  end
+    def find_by_email (email)
+      Contact.runQuery("SELECT COUNT(email) AS count
+           FROM contacts
+           WHERE email LIKE '%#{email}%'").getvalue(0,0).to_i > 0
+    end
+end
 
   private
 
@@ -94,14 +107,4 @@ class Contact
   end
 
 end
-   
-
-  #   def find_by_name( contact_name )
-  #     @@contact.find_all {|contact| contact.fname == contact_name } unless @@contact.nil?
-  #   end
-
-  #   def find_by_id( id )
-  #     @@contact.find_all {|contact| contact.id == id } unless @@contact.nil?
-  #   end
-
-
+  

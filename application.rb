@@ -24,6 +24,8 @@ class Application
         show
       when "find"
         find
+      when "update"
+        update
       end
     end
   end
@@ -35,11 +37,18 @@ class Application
     puts "Welcome to the best contact list managing application.".upcase.colorize( :blue )
     puts "What would you like to do next?".upcase.colorize( :green )
     puts " new      - Create a new contact.".colorize( :green )
+    puts " update   - Update a contact by ID number.".colorize( :green )
     puts " list     - List all contacts.".colorize( :green )
     puts " show     - Displays contact's ID and contact details.".colorize( :green )
     puts " find     - Displays contact's name and contact details by name.".colorize( :green )
     puts " quit     - Exit Application.".colorize( :green )
     print ">> "
+  end
+
+  def update
+    puts "What ID would you like to update?"
+    id = gets.chomp.to_i
+    Contact.update_entry(id)
   end
 
   def quit
