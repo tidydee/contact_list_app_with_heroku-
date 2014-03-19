@@ -2,6 +2,9 @@ require 'colorize'
 require 'pry'
 require './contact'
 
+$debugging = true
+$max_contacts_per_page = 100
+
 class Application
 
   def run
@@ -63,11 +66,11 @@ class Application
     end
   end
 
-  def list
-    Contact.all.each do |c_list| 
-      puts c_list
-    end
+def list
+  Contact.list.each do |contact|
+    puts contact
   end
+end
   
   def new_contact
     puts "Please type contact's email address."

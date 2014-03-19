@@ -5,10 +5,11 @@ class Contact
 
   attr_accessor :lname, :fname, :email, :id 
 
-  def initialize(lname, fname, email)
+  def initialize(lname, fname, email, id = nil)
     @fname =lname
     @lname = fname
     @email = email
+    @id = id
   end
 
   def save
@@ -20,10 +21,6 @@ class Contact
   end
 
   def insert
-    # establish a connection with db
-    # INSERT against the table and use @fname, @lname, etc to generate our INSERT stmt
-    # Get back the ID from the record that was just inserted and save it as @id
-    # return true
     connection = Contact.db_connection
     results = connection.exec(
         "INSERT INTO contacts (firstname, lastname, email)
@@ -40,6 +37,22 @@ class Contact
     # Get back the id from the record needing UPDATE    
   end
 
+
+  def to_s
+    "#{@id}: #{@fname} #{@lname} (#{@email})"  
+  end
+
+
+  # ## Class Methods
+  class << self
+
+    def create(fname, lname, email)
+      contact = Contact.new(fname, lname, email)
+      contact.save #Does an insert:)
+      return contact
+    end
+  end
+
   ## Class Methods
   class << self
 
@@ -53,50 +66,33 @@ class Contact
     )
     end
 
-
-  end
-
-  # ## In-memory list of contacts
-
-  # attr_accessor :fname, :lname, :email, :id, :list, :numbers
-  # @@contacts = []
-
-  # def initialize(fname, lname, email, numbers)
-  #  @fname = fname
-  #  @lname = lname
-  #  @email = email
-  #  @numbers = numbers
-  # quit
-  
-  # end
-
-  def to_s
-    # TODO: return string representation of Contact
-    "#{@id}: #{@fname} #{@lname} (#{@email})"  
-  end
-
-
-  # ## Class Methods
-  class << self
-
-    def create(fname, lname, email)
-      contact = Contact.new(fname, lname, email)
-      contact.save #Does an insert:)
-      return contact
+    def list(page = 0)
+      offset = page * $max_contacts_per_page
+      contacts = []
+      Contact.runQuery("select * from contacts OFFSET #{offset} LIMIT #{$max_contacts_per_page}").each do |result|
+        contacts << Contact.from_row(result)
+      end
+      contacts
     end
-
-    def find_by_email (email)
-      connection = Contact.db_connection
-      results = connection.exec(
-          "SELECT email 
-           FROM contacts
-           WHERE email LIKE '%#{email}%' LIMIT 1"
-        )
-      connection.close
-      results[0].length > 0
-    end
-
   end
+
+  def find_by_email (email)
+    Contact.runQuery("SELECT email 
+         FROM contacts
+         WHERE email LIKE '%#{email}%' LIMIT 1").results[0].length > 0
+  end
+
+  private
+
+  def self.from_row(row)
+    Contact.new(row["lastname"], row["firstname"], row["email"], row["id"])
+  end
+
+  def self.runQuery(query)
+    puts query if $debugging
+    Contact.db_connection.exec(query)
+  end
+
 end
    
 
@@ -108,26 +104,4 @@ end
   #     @@contact.find_all {|contact| contact.id == id } unless @@contact.nil?
   #   end
 
-
-
-  #   def all_CSV
-  #     @@contacts      
-  #   end
-
-  #   def all_CSV=(csv_file)
-  #     @@contacts = csv_file
-  #   end
-
-  #   def all
-  #     @@contacts
-  #   end
-
-  #   def all=(contacts)
-  #     @@contact = contacts
-  #   end
-
-  #   def destroy_all
-  #     @@contacts = []
-  #   end
-  # end
 
