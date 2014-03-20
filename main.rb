@@ -3,7 +3,7 @@ require_relative 'contact'
 require_relative 'application'
 
 # Output messages from AR to STDOUT
-# ActiveRecord::Base.logger = Logger.new(STDOUT)
+ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 puts "Establishing connection to database ..."
 ActiveRecord::Base.establish_connection(

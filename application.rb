@@ -109,7 +109,7 @@ class Application
   def find_contact
     puts "Please insert contact's first name?"
     fname = gets.chomp
-    contact = Contact.where("firstname = 'fname'")
+    contact = Contact.find_by(firstname: fname)
     puts "#{contact.id} #{contact.firstname} #{contact.lastname} #{contact.email}" 
     # each do |find|
     #   if find        puts "#{contact.id} #{contact.firstname} #{contact.lastname} #{contact.email}" 
