@@ -2,7 +2,7 @@ require 'colorize'
 require 'pry'
 require './contact'
 
-$debugging = true
+$debugging = false
 $max_contacts_per_page = 100
 
 class Application
